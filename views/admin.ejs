@@ -1,0 +1,96 @@
+<%- include('partials/head') %>
+    <section class="page-top">
+        <div>
+            <p class="eyebrow">Blood bank operations</p>
+            <h1>Good morning, <em>Aarav.</em></h1>
+            <p class="muted">Here’s what needs your attention today.</p>
+        </div><a class="button button-outline" href="/admin/donors">Donor directory <span>→</span></a>
+    </section>
+    <% if (success) { %>
+        <div class="alert alert-success">
+            <%= success %>
+        </div>
+        <% } %>
+            <section class="stats-grid">
+                <div class="stat-card"><span>Active requests</span><strong>
+                        <%= activeRequests.length %>
+                    </strong><small>Needs attention</small></div>
+                <div class="stat-card"><span>Low-stock groups</span><strong class="red-text">
+                        <%= lowStock.length %>
+                    </strong><small>Below target</small></div>
+                <div class="stat-card"><span>Registered donors</span><strong>
+                        <%= donors.length %>
+                    </strong><small>And growing</small></div>
+                <div class="stat-card"><span>Units in bank</span><strong>
+                        <%= inventory.reduce((sum, item)=> sum + item.units, 0) %>
+                    </strong><small>Across 8 groups</small></div>
+            </section>
+            <section class="admin-columns">
+                <div class="admin-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="eyebrow">Action queue</p>
+                            <h2>Requests to review</h2>
+                        </div><span class="count-badge">
+                            <%= activeRequests.length %>
+                        </span>
+                    </div>
+                    <div class="admin-request-list">
+                        <% activeRequests.forEach(request=> { %><div class="admin-request">
+                                <div class="request-badge">
+                                    <%= request.bloodGroup %>
+                                </div>
+                                <div class="request-main"><strong>
+                                        <%= request.patientName %>
+                                    </strong>
+                                    <p>
+                                        <%= request.hospital %> · <%= request.units %> units
+                                    </p><span class="urgency <%= request.urgency.toLowerCase() %>">
+                                        <%= request.urgency %>
+                                    </span>
+                                </div>
+                                <form method="post" action="/admin/requests/<%= request._id %>/status"><select
+                                        name="status" onchange="this.form.submit()">
+                                        <option <%=request.status==='Pending' ? 'selected' : '' %>>Pending</option>
+                                        <option <%=request.status==='Processing' ? 'selected' : '' %>>Processing
+                                        </option>
+                                        <option>Fulfilled</option>
+                                    </select></form>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+                <div class="admin-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="eyebrow">Live inventory</p>
+                            <h2>Units by group</h2>
+                        </div><span class="count-badge">8</span>
+                    </div>
+                    <form class="inventory-add-form" method="post" action="/admin/inventory">
+                        <select name="bloodGroup" required>
+                            <option value="">Blood group</option>
+                            <% ['A+', 'A-' , 'B+' , 'B-' , 'AB+' , 'AB-' , 'O+' , 'O-' ].forEach(group=> { %>
+                                <option value="<%= group %>">
+                                    <%= group %>
+                                </option>
+                                <% }) %>
+                        </select>
+                        <input type="number" name="units" min="0" placeholder="Units" required>
+                        <input type="number" name="target" min="1" value="25" placeholder="Target" required>
+                        <button class="button button-dark" type="submit">Save stock <span>+</span></button>
+                    </form>
+                    <div class="inventory-admin-list">
+                        <% inventory.forEach(item=> { %><form class="inventory-admin-row" method="post"
+                                action="/admin/inventory/<%= item._id %>"><span class="blood-type">
+                                    <%= item.bloodGroup %>
+                                </span>
+                                <div class="stock-bar"><i class="<%= item.units < item.target ? 'danger' : '' %>"
+                                        style="width:<%= Math.min(item.units / item.target * 100, 100) %>%"></i></div>
+                                <input type="number" name="units" value="<%= item.units %>" min="0"><button
+                                    type="submit" aria-label="Update inventory">↗</button>
+                            </form>
+                            <% }) %>
+                    </div>
+                </div>
+            </section><%- include('partials/foot') %>

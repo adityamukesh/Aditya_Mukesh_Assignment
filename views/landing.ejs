@@ -1,0 +1,52 @@
+<%- include('partials/head') %>
+    <section class="hero">
+        <div class="hero-copy">
+            <p class="eyebrow">Blood connects us all <span class="eyebrow-line"></span></p>
+            <h1>Give blood.<br><em>Give tomorrow.</em></h1>
+            <p class="hero-lead">A faster, clearer way to connect generous donors with the people and hospitals who need
+                them most.</p>
+            <div class="hero-actions"><a class="button button-dark" href="/register">Become a donor <span>↗</span></a><a
+                    class="text-link" href="/search">Check availability <span>→</span></a></div>
+            <div class="hero-proof">
+                <div class="avatar-stack"><span>MI</span><span>RS</span><span>AN</span><span
+                        class="avatar-more">+</span></div>
+                <p><strong>1,248</strong> people have already<br>signed up to help this month.</p>
+            </div>
+        </div>
+        <div class="hero-art">
+            <div class="art-circle circle-one"></div>
+            <div class="art-circle circle-two"></div>
+            <div class="hero-card"><span class="pulse">♥</span>
+                <p>One donation can<br>save <strong>up to 3 lives.</strong></p>
+            </div>
+            <div class="art-label">Care, in circulation <span>✦</span></div>
+        </div>
+    </section>
+    <section class="impact-strip">
+        <div><span class="impact-number">8</span><span>blood groups<br>tracked live</span></div>
+        <div><span class="impact-number">90</span><span>days between<br>donations</span></div>
+        <div><span class="impact-number">24/7</span><span>emergency<br>response</span></div>
+        <div class="impact-note">The right blood,<br>right when it matters.</div>
+    </section>
+    <section class="home-inventory">
+        <div class="section-heading">
+            <p class="eyebrow">Live availability</p>
+            <h2>Ready when<br><em>needed.</em></h2><a href="/search" class="text-link">View all inventory
+                <span>→</span></a>
+        </div>
+        <div class="inventory-preview">
+            <% if (inventory.length) { inventory.slice(0, 4).forEach((item)=> { %><div class="blood-tile"><span
+                        class="blood-type">
+                        <%= item.bloodGroup %>
+                    </span><strong>
+                        <%= item.units %>
+                    </strong><span>units available</span>
+                    <div class="stock-bar"><i style="width:<%= Math.min(item.units / item.target * 100, 100) %>%"></i>
+                    </div>
+                </div>
+                <% }) } else { %>
+                    <p class="empty-state">Connect MongoDB Atlas to view live inventory.</p>
+                    <% } %>
+        </div>
+    </section>
+    <%- include('partials/foot') %>

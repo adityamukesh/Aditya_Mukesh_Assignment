@@ -4,7 +4,7 @@ const { wantsJson } = require('../middleware/request');
 const { flashRedirect } = require('../utils/response');
 
 function sessionUser(user) {
-    return { id: user._id.toString(), name: user.name, role: user.role, bloodGroup: user.bloodGroup };
+    return { id: user._id.toString(), name: user.name, role: user.role, city: user.city };
 }
 
 async function login(req, res) {
@@ -16,7 +16,7 @@ async function login(req, res) {
 
     req.session.user = sessionUser(user);
     if (wantsJson(req)) return res.json({ message: 'Login successful', user: req.session.user });
-    res.redirect(user.role === 'admin' ? '/admin' : '/dashboard');
+    res.redirect(user.role === 'admin' ? '/admin' : user.role === 'agent' ? '/agent' : '/dashboard');
 }
 
 async function register(req, res) {
@@ -27,16 +27,15 @@ async function register(req, res) {
             email: req.body.email,
             password,
             phone: req.body.phone,
-            bloodGroup: req.body.bloodGroup,
             city: req.body.city,
-            lastDonation: req.body.lastDonation || undefined
+            role: req.body.role === 'agent' ? 'agent' : 'customer'
         });
 
         req.session.user = sessionUser(user);
         if (wantsJson(req)) {
             return res.status(201).json({
                 message: 'Registration successful',
-                user: { id: user._id, name: user.name, email: user.email, phone: user.phone, bloodGroup: user.bloodGroup, city: user.city, lastDonation: user.lastDonation || null, role: user.role }
+                user: { id: user._id, name: user.name, email: user.email, phone: user.phone, city: user.city, role: user.role }
             });
         }
         res.redirect('/dashboard');

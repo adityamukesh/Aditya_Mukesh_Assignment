@@ -1,90 +1,50 @@
 <%- include('partials/head') %>
     <section class="page-top">
         <div>
-            <p class="eyebrow">Donor space</p>
-            <h1>Good morning, <em>
-                    <%= donor.name.split(' ')[0] %>.</em></h1>
-    <p class="muted">Your generosity keeps the circle moving.</p>
-  </div>
-  <a class="button button-red" href="/request">Request blood <span>↗</span></a>
-</section>
-<% if (success) { %>
-  <div class="alert alert-success"><%= success %></div>
-<% } %>
-<section class="dashboard-grid">
-  <div class="eligibility-card <%= eligible ? ' is-eligible' : 'is-waiting' %>">
-                        <div class="card-top">
-                            <span class="icon-circle">♥</span>
-                            <span class="status-pill">
-                                <%= eligible ? 'Eligible to donate' : 'Not yet eligible' %>
-                            </span>
-                        </div>
-                        <h2>
-                            <%= eligible ? 'Your next donation could help.' : 'Your next donation is coming.' %>
-                        </h2>
-                        <p>
-                            <%= eligible ? 'You have completed the recommended 90-day gap. Thank you for showing up.'
-                                : 'You can donate again in ' + (90 - days) + ' days.' %>
-                        </p>
-                        <div class="eligibility-track"><i
-                                style="width:<%= Math.min((days || 0) / 90 * 100, 100) %>%"></i></div>
-                        <small>
-                            <%= eligible ? 'Ready whenever you are' : (days || 0)
-                                + ' of 90 days since your last donation' %>
-                        </small>
-        </div>
-        <div class="profile-card">
-            <div class="profile-initial">
-                <%= donor.name.charAt(0) %>
-            </div>
-            <h3>
-                <%= donor.name %>
-            </h3>
-            <p>
-                <%= donor.city %> · <%= donor.bloodGroup %>
-            </p>
-            <a href="/search" class="text-link">Find nearby blood <span>→</span></a>
-        </div>
+            <p class="eyebrow">Customer space</p>
+            <h1>Your parcels,<br><em>in motion.</em></h1>
+            <p class="muted">Book, track, and stay one step ahead.</p>
+        </div><a class="button button-red" href="/parcels/book">Book a parcel <span>↗</span></a>
+    </section>
+    <section class="stats-grid">
+        <div class="stat-card"><span>Total parcels</span><strong>
+                <%= stats.total %>
+            </strong><small>Booked with us</small></div>
+        <div class="stat-card"><span>In motion</span><strong>
+                <%= stats.active %>
+            </strong><small>Not yet delivered</small></div>
+        <div class="stat-card"><span>Delivered</span><strong class="green-text">
+                <%= stats.delivered %>
+            </strong><small>Successfully arrived</small></div>
     </section>
     <section class="content-section">
         <div class="section-heading inline-heading">
             <div>
-                <p class="eyebrow">Your requests</p>
-                <h2>Keep an eye on<br><em>what matters.</em></h2>
+                <p class="eyebrow">Shipment history</p>
+                <h2>Follow every<br><em>handoff.</em></h2>
             </div>
-            <a href="/request" class="button button-outline">New request <span>+</span></a>
         </div>
-        <div class="request-list">
-            <% if (!requests.length) { %>
-                <div class="empty-state">No requests yet. You can create an emergency request whenever you need support.
-                </div>
+        <div class="parcel-list">
+            <% if (!parcels.length) { %>
+                <div class="empty-state">No parcels yet. Book your first delivery to get a tracking ID.</div>
                 <% } %>
-                    <% requests.forEach(request=> { %>
-                        <div class="request-row">
-                            <div class="request-badge">
-                                <%= request.bloodGroup %>
+                    <% parcels.forEach(parcel=> { %><a class="parcel-row" href="/track/<%= parcel.trackingId %>">
+                            <div class="tracking-badge">
+                                <%= parcel.trackingId.slice(-4) %>
                             </div>
-                            <div>
-                                <strong>
-                                    <%= request.patientName %>
+                            <div><strong>
+                                    <%= parcel.trackingId %>
                                 </strong>
                                 <p>
-                                    <%= request.hospital %> · <%= request.units %> unit<%= request.units===1 ? '' : 's'
-                                                %>
+                                    <%= parcel.receiver.name %> · <%= parcel.dropAddress %>
                                 </p>
-                            </div>
-                            <span class="urgency <%= request.urgency.toLowerCase() %>">
-                                <%= request.urgency %>
-                            </span>
-                            <span class="request-status status-<%= request.status.toLowerCase() %>">
-                                <%= request.status %>
-                            </span>
-                            <time>
-                                <%= new Date(request.createdAt).toLocaleDateString('en-IN', { day: 'numeric' ,
+                            </div><span class="status-pill">
+                                <%= parcel.status %>
+                            </span><time>
+                                <%= new Date(parcel.createdAt).toLocaleDateString('en-IN', { day: 'numeric' ,
                                     month: 'short' }) %>
                             </time>
-                        </div>
+                        </a>
                         <% }) %>
         </div>
-    </section>
-    <%- include('partials/foot') %>
+    </section><%- include('partials/foot') %>

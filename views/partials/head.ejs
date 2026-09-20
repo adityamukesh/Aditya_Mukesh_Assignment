@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        <%= title %> · LifeLink
+        <%= title %> · ParcelPilot
     </title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,19 +17,23 @@
 
 <body>
     <header class="site-header">
-        <a class="brand" href="/"><span class="brand-mark">+</span><span>lifelink<span
+        <a class="brand" href="/"><span class="brand-mark">↗</span><span>parcelpilot<span
                     class="brand-dot">.</span></span></a>
         <nav class="nav-links">
-            <a href="/search" class="<%= path === '/search' ? 'active' : '' %>">Find blood</a>
-            <% if (currentUser) { %><a
-                    href="<%= currentUser.role === 'admin' ? '/admin' : '/dashboard' %>">Dashboard</a>
+            <a href="/">Home</a>
+            <% if (currentUser && currentUser.role==='customer' ) { %><a href="/parcels/book">Book parcel</a><a
+                    href="/dashboard">My parcels</a>
                 <% } %>
-                    <a href="/request" class="nav-urgent">Emergency request <span>↗</span></a>
-                    <% if (currentUser) { %>
-                        <form method="post" action="/logout"><button class="nav-logout" type="submit">Sign out</button>
-                        </form>
-                        <% } else { %><a href="/login">Sign in</a>
-                            <% } %>
+                    <% if (currentUser && currentUser.role==='agent' ) { %><a href="/agent">Assigned parcels</a>
+                        <% } %>
+                            <% if (currentUser && currentUser.role==='admin' ) { %><a href="/admin">Operations</a>
+                                <% } %>
+                                    <% if (currentUser) { %>
+                                        <form method="post" action="/logout"><button class="nav-logout"
+                                                type="submit">Sign out</button></form>
+                                        <% } else { %><a href="/login">Sign in</a><a class="nav-urgent"
+                                                href="/register">Get started ↗</a>
+                                            <% } %>
         </nav>
         <button class="menu-button" aria-label="Open menu">☰</button>
     </header>

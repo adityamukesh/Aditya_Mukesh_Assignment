@@ -1,7 +1,7 @@
 {
-    "name": "lifelink-blood-bank",
+    "name": "parcelpilot-courier",
     "version": "1.0.0",
-    "description": "Blood donation and blood bank management system",
+    "description": "Courier and parcel delivery tracking system",
     "main": "server.js",
     "scripts": {
         "dev": "nodemon server.js",

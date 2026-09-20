@@ -1,0 +1,39 @@
+<%- include('partials/head') %>
+    <section class="page-top">
+        <div>
+            <p class="eyebrow">Delivery agent</p>
+            <h1>Your route,<br><em>your rhythm.</em></h1>
+            <p class="muted">Update each handoff and keep customers moving.</p>
+        </div>
+    </section>
+    <section class="content-section">
+        <div class="section-heading">
+            <p class="eyebrow">Assigned parcels</p>
+            <h2>Today’s <em>load.</em></h2>
+        </div>
+        <div class="parcel-list">
+            <% if (!parcels.length) { %>
+                <div class="empty-state">No parcels assigned yet.</div>
+                <% } %>
+                    <% parcels.forEach(parcel=> { %><div class="parcel-row agent-row">
+                            <div class="tracking-badge">
+                                <%= parcel.trackingId.slice(-4) %>
+                            </div>
+                            <div><strong>
+                                    <%= parcel.trackingId %>
+                                </strong>
+                                <p>
+                                    <%= parcel.customer.name %> · <%= parcel.dropAddress %>
+                                </p>
+                            </div>
+                            <form method="post" action="/agent/parcels/<%= parcel._id %>/status"><select name="status"
+                                    onchange="this.form.submit()">
+                                    <% parcelStatuses.forEach(status=> { %><option <%=status===parcel.status
+                                            ? 'selected' : '' %>><%= status %>
+                                        </option>
+                                        <% }) %>
+                                </select></form>
+                        </div>
+                        <% }) %>
+        </div>
+    </section><%- include('partials/foot') %>

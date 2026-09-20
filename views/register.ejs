@@ -1,32 +1,23 @@
 <%- include('partials/head') %>
     <section class="auth-shell">
         <div class="auth-intro">
-            <p class="eyebrow">Make a difference</p>
-            <h1>Someone needs<br><em>your type.</em></h1>
-            <p>Register as a donor and we’ll help you know when and where your donation can make the biggest impact.</p>
+            <p class="eyebrow">Join the network</p>
+            <h1>Every parcel<br><em>starts here.</em></h1>
+            <p>Create a customer account to book shipments and follow every status change from pickup to delivery.</p>
         </div>
         <form class="form-panel" method="post" action="/register">
-            <h2>Create your profile</h2>
+            <h2>Create account</h2>
             <% if (error) { %>
                 <div class="alert alert-error">
                     <%= error %>
                 </div>
                 <% } %><label>Full name<input type="text" name="name" placeholder="Your name" required></label>
-                    <div class="form-grid"><label>Email address<input type="email" name="email"
-                                placeholder="you@example.com" required></label><label>Phone number<input type="tel"
-                                name="phone" placeholder="+91 00000 00000" required></label></div>
-                    <div class="form-grid"><label>Blood group<select name="bloodGroup" required>
-                                <option value="">Select group</option>
-                                <% ['A+','A-','B+','B-','AB+','AB-','O+','O-'].forEach(group=> { %><option>
-                                        <%= group %>
-                                    </option>
-                                    <% }) %>
-                            </select></label><label>City<input type="text" name="city" placeholder="Your city"
-                                required></label></div><label>Last donation date <span class="label-note">Leave blank if
-                            this is your first</span><input type="date"
-                            name="lastDonation"></label><label>Password<input type="password" name="password"
-                            placeholder="At least 6 characters" minlength="6" required></label><button
-                        class="button button-dark button-full" type="submit">Join the community <span>↗</span></button>
+                    <div class="form-grid"><label>Email<input type="email" name="email" placeholder="you@example.com"
+                                required></label><label>Phone<input type="tel" name="phone"
+                                placeholder="+91 00000 00000" required></label></div><label>City<input type="text"
+                            name="city" placeholder="Your city" required></label><label>Password<input type="password"
+                            name="password" placeholder="At least 6 characters" minlength="6" required></label><button
+                        class="button button-dark button-full" type="submit">Start shipping <span>↗</span></button>
                     <p class="form-foot">Already registered? <a href="/login">Sign in</a></p>
         </form>
     </section><%- include('partials/foot') %>

@@ -6,7 +6,8 @@ const path = require('path');
 const { connectDatabase } = require('./config/database');
 const publicRoutes = require('./routes/publicRoutes');
 const authRoutes = require('./routes/authRoutes');
-const donorRoutes = require('./routes/donorRoutes');
+const customerRoutes = require('./routes/customerRoutes');
+const agentRoutes = require('./routes/agentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
@@ -31,13 +32,14 @@ app.use((req, res, next) => {
 });
 
 app.use(authRoutes);
-app.use(donorRoutes);
+app.use(customerRoutes);
+app.use(agentRoutes);
 app.use('/admin', adminRoutes);
 app.use(publicRoutes);
 
 async function start() {
     await connectDatabase();
-    app.listen(port, () => console.log(`LifeLink running at http://localhost:${port}`));
+    app.listen(port, () => console.log(`ParcelPilot running at http://localhost:${port}`));
 }
 
 if (require.main === module) start();

@@ -1,0 +1,42 @@
+<%- include('partials/head') %>
+    <section class="track-page">
+        <div class="page-top compact">
+            <div>
+                <p class="eyebrow">Live shipment</p>
+                <h1>
+                    <%= parcel.trackingId %>
+                </h1>
+                <p class="muted">
+                    <%= parcel.sender.name %> to <%= parcel.receiver.name %>
+                </p>
+            </div><span class="status-pill big">
+                <%= parcel.status %>
+            </span>
+        </div>
+        <div class="tracking-card">
+            <div class="route-summary">
+                <div><small>From</small><strong>
+                        <%= parcel.pickupAddress %>
+                    </strong></div><span>→</span>
+                <div><small>To</small><strong>
+                        <%= parcel.dropAddress %>
+                    </strong></div>
+            </div>
+            <div class="timeline">
+                <% parcel.statusHistory.forEach((event, index)=> { %><div
+                        class="timeline-item <%= index === 0 ? 'current' : '' %>"><span class="timeline-dot"></span>
+                        <div><strong>
+                                <%= event.status %>
+                            </strong>
+                            <p>
+                                <%= event.note || 'Status updated' %>
+                            </p><time>
+                                <%= new Date(event.timestamp).toLocaleString('en-IN', { dateStyle: 'medium' ,
+                                    timeStyle: 'short' }) %>
+                            </time>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+        </div>
+    </section><%- include('partials/foot') %>

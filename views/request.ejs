@@ -1,45 +1,31 @@
 <%- include('partials/head') %>
     <section class="request-shell">
         <div class="request-intro">
-            <p class="eyebrow">Emergency support</p>
-            <h1>Tell us who<br><em>needs help.</em></h1>
-            <p>Our blood bank team reviews every request and responds as quickly as possible. For immediate emergencies,
-                call your nearest hospital first.</p>
+            <p class="eyebrow">New shipment</p>
+            <h1>Send it<br><em>forward.</em></h1>
+            <p>Tell us where it starts, where it is going, and what is inside. We will return a tracking ID instantly.
+            </p>
             <div class="emergency-note"><span>✦</span>
-                <p><strong>Critical requests are prioritized.</strong><br>Keep your phone nearby after submitting.</p>
+                <p><strong>Every handoff is recorded.</strong><br>Customers and agents see the same timeline.</p>
             </div>
         </div>
-        <form class="form-panel request-form" method="post" action="/request">
-            <h2>Blood request details</h2>
-            <% if (error) { %>
-                <div class="alert alert-error">
-                    <%= error %>
-                </div>
-                <% } %>
-                    <% if (success) { %>
-                        <div class="alert alert-success">
-                            <%= success %>
-                        </div>
-                        <% } %>
-                            <div class="form-grid"><label>Patient name<input name="patientName" placeholder="Full name"
-                                        required></label><label>Hospital / clinic<input name="hospital"
-                                        placeholder="Where they are being treated" required></label></div>
-                            <div class="form-grid triple"><label>Blood group<select name="bloodGroup" required>
-                                        <option value="">Select</option>
-                                        <% groups.forEach(group=> { %><option>
-                                                <%= group %>
-                                            </option>
-                                            <% }) %>
-                                    </select></label><label>Units needed<input type="number" name="units" min="1"
-                                        max="20" value="1" required></label><label>Urgency<select name="urgency">
-                                        <option>Critical</option>
-                                        <option selected>Urgent</option>
-                                        <option>Routine</option>
-                                    </select></label></div><label>Contact number<input name="contact"
-                                    placeholder="Number the care team can reach" required></label><label>Additional note
-                                <span class="label-note">Optional</span><textarea name="note" rows="3"
-                                    placeholder="Anything the blood bank should know..."></textarea></label><button
-                                class="button button-red button-full" type="submit">Submit request
-                                <span>↗</span></button>
+        <form class="form-panel request-form" method="post" action="/parcels">
+            <h2>Parcel details</h2>
+            <div class="form-grid"><label>Sender name<input name="senderName" required
+                        placeholder="Full name"></label><label>Sender phone<input name="senderPhone" required
+                        placeholder="Phone number"></label></div>
+            <div class="form-grid"><label>Receiver name<input name="receiverName" required
+                        placeholder="Full name"></label><label>Receiver phone<input name="receiverPhone" required
+                        placeholder="Phone number"></label></div><label>Pickup address<input name="pickupAddress"
+                    required placeholder="Where should we collect it?"></label><label>Drop address<input
+                    name="dropAddress" required placeholder="Where should we deliver it?"></label>
+            <div class="form-grid triple"><label>Weight (kg)<input type="number" name="weight" min="0.1" step="0.1"
+                        required placeholder="1.0"></label><label>Parcel type<select name="parcelType">
+                        <% parcelTypes.forEach(type=> { %><option>
+                                <%= type %>
+                            </option>
+                            <% }) %>
+                    </select></label><label>Delivery zone<input name="zone" placeholder="Central"></label></div><button
+                class="button button-red button-full" type="submit">Book parcel <span>↗</span></button>
         </form>
     </section><%- include('partials/foot') %>

@@ -1,39 +1,50 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password: { type: String, required: true },
-  role: { type: String, enum: ['donor', 'admin'], default: 'donor' },
-  phone: String,
-  bloodGroup: { type: String, enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] },
-  lastDonation: Date,
-  city: String,
-  createdAt: { type: Date, default: Date.now }
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ['customer', 'agent', 'admin', 'donor'], default: 'customer' },
+    phone: String,
+    city: String,
+    vehicle: String,
+    zone: String,
+    active: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now }
 });
 
-const inventorySchema = new mongoose.Schema({
-  bloodGroup: { type: String, required: true, unique: true },
-  units: { type: Number, default: 0, min: 0 },
-  target: { type: Number, default: 25 },
-  updatedAt: { type: Date, default: Date.now }
+const statusHistorySchema = new mongoose.Schema({
+    status: { type: String, enum: ['Booked', 'Picked Up', 'In Transit', 'Out for Delivery', 'Delivered', 'Failed'], required: true },
+    note: String,
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    timestamp: { type: Date, default: Date.now }
+}, { _id: false });
+
+const parcelSchema = new mongoose.Schema({
+    trackingId: { type: String, required: true, unique: true, index: true },
+    customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    sender: { name: String, phone: String },
+    receiver: { name: String, phone: String },
+    pickupAddress: { type: String, required: true },
+    dropAddress: { type: String, required: true },
+    weight: { type: Number, required: true, min: 0.1 },
+    parcelType: { type: String, enum: ['Document', 'Box', 'Fragile', 'Electronics', 'Other'], default: 'Box' },
+    zone: String,
+    assignedAgent: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    status: { type: String, enum: ['Booked', 'Picked Up', 'In Transit', 'Out for Delivery', 'Delivered', 'Failed'], default: 'Booked' },
+    statusHistory: { type: [statusHistorySchema], default: [] },
+    createdAt: { type: Date, default: Date.now }
 });
 
-const requestSchema = new mongoose.Schema({
-  patientName: { type: String, required: true },
-  hospital: { type: String, required: true },
-  bloodGroup: { type: String, required: true },
-  units: { type: Number, required: true, min: 1 },
-  urgency: { type: String, enum: ['Routine', 'Urgent', 'Critical'], default: 'Urgent' },
-  status: { type: String, enum: ['Pending', 'Processing', 'Fulfilled'], default: 'Pending' },
-  contact: String,
-  note: String,
-  requester: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  createdAt: { type: Date, default: Date.now }
+const zoneSchema = new mongoose.Schema({
+    name: { type: String, required: true, unique: true, trim: true },
+    city: String,
+    active: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now }
 });
 
 module.exports = {
-  User: mongoose.model('User', userSchema),
-  Inventory: mongoose.model('Inventory', inventorySchema),
-  BloodRequest: mongoose.model('BloodRequest', requestSchema)
+    User: mongoose.model('User', userSchema),
+    Parcel: mongoose.model('Parcel', parcelSchema),
+    Zone: mongoose.model('Zone', zoneSchema)
 };

@@ -1,45 +1,24 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const { User, Inventory, BloodRequest } = require('./models');
+const { User, Parcel, Zone } = require('./models');
 
-const groups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+async function upsertUser(data) {
+    return User.findOneAndUpdate({ email: data.email }, { $setOnInsert: data }, { upsert: true, new: true, setDefaultsOnInsert: true });
+}
 
 async function seed() {
     await mongoose.connect(process.env.MONGODB_URI);
-    const password = await bcrypt.hash('admin123', 10);
-    const admin = await User.findOneAndUpdate(
-        { email: 'admin@lifelink.org' },
-        { name: 'Aarav Mehta', email: 'admin@lifelink.org', password, role: 'admin', phone: '+91 98765 43210', city: 'Pune' },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-    const donorPassword = await bcrypt.hash('donor123', 10);
-    const donor = await User.findOneAndUpdate(
-        { email: 'maya@example.com' },
-        { name: 'Maya Iyer', email: 'maya@example.com', password: donorPassword, role: 'donor', phone: '+91 98220 14141', city: 'Pune', bloodGroup: 'O+', lastDonation: new Date('2025-12-18') },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-    await User.findOneAndUpdate(
-        { email: 'rohan@example.com' },
-        { name: 'Rohan Shah', email: 'rohan@example.com', password: donorPassword, role: 'donor', phone: '+91 98111 77123', city: 'Mumbai', bloodGroup: 'A+', lastDonation: new Date('2026-02-21') },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-    );
-    await Promise.all(groups.map((bloodGroup, index) => Inventory.updateOne(
-        { bloodGroup },
-        { $setOnInsert: { bloodGroup, units: [42, 8, 27, 19, 12, 4, 36, 14][index], target: 25 } },
-        { upsert: true }
-    )));
-    const demoRequests = [
-        { patientName: 'Kabir Nair', hospital: 'Sahyadri Hospital', bloodGroup: 'O-', units: 3, urgency: 'Critical', status: 'Pending', contact: '+91 90000 10001', note: 'Surgery scheduled tonight', requester: donor._id },
-        { patientName: 'Anaya Rao', hospital: 'Ruby Hall Clinic', bloodGroup: 'AB+', units: 2, urgency: 'Urgent', status: 'Processing', contact: '+91 90000 10002', requester: donor._id },
-        { patientName: 'Dev Malhotra', hospital: 'KEM Hospital', bloodGroup: 'A+', units: 1, urgency: 'Routine', status: 'Fulfilled', contact: '+91 90000 10003', requester: admin._id }
-    ];
-    await Promise.all(demoRequests.map((request) => BloodRequest.updateOne(
-        { patientName: request.patientName, hospital: request.hospital },
-        { $setOnInsert: request },
-        { upsert: true }
-    )));
-    console.log('Seed complete. Existing user data was preserved. Admin: admin@lifelink.org / admin123');
+    const admin = await upsertUser({ name: 'Aarav Mehta', email: 'admin@parcelpilot.io', password: await bcrypt.hash('admin123', 10), role: 'admin', phone: '+91 98765 43210', city: 'Pune' });
+    const agent = await upsertUser({ name: 'Rohan Shah', email: 'agent@parcelpilot.io', password: await bcrypt.hash('agent123', 10), role: 'agent', phone: '+91 98111 77123', city: 'Pune', vehicle: 'MH 12 AB 4829', zone: 'Central Pune' });
+    const customer = await upsertUser({ name: 'Maya Iyer', email: 'maya@parcelpilot.io', password: await bcrypt.hash('customer123', 10), role: 'customer', phone: '+91 98220 14141', city: 'Pune' });
+    const zone = await Zone.findOneAndUpdate({ name: 'Central Pune' }, { $setOnInsert: { name: 'Central Pune', city: 'Pune' } }, { upsert: true, new: true });
+    const existing = await Parcel.findOne({ trackingId: 'LLDEMO4829' });
+    if (!existing) await Parcel.create({ trackingId: 'LLDEMO4829', customer: customer._id, assignedAgent: agent._id, sender: { name: 'Maya Iyer', phone: '+91 98220 14141' }, receiver: { name: 'Ananya Rao', phone: '+91 90000 10002' }, pickupAddress: '12 Koregaon Park, Pune', dropAddress: '45 Baner Road, Pune', weight: 1.4, parcelType: 'Document', zone: zone.name, status: 'In Transit', statusHistory: [{ status: 'Booked', note: 'Parcel booking created', updatedBy: admin._id }, { status: 'Picked Up', note: 'Collected from sender', updatedBy: agent._id }, { status: 'In Transit', note: 'Moving through Central Pune', updatedBy: agent._id }] });
+    console.log('ParcelPilot seed complete. Existing data was preserved.');
+    console.log('Admin: admin@parcelpilot.io / admin123');
+    console.log('Agent: agent@parcelpilot.io / agent123');
+    console.log('Customer: maya@parcelpilot.io / customer123');
     await mongoose.disconnect();
 }
 seed().catch((error) => { console.error(error.message); process.exit(1); });

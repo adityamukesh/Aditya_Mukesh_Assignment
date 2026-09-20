@@ -5,7 +5,10 @@ const { dashboard, updateStatus } = require('../controllers/agentController');
 
 const router = express.Router();
 function requireAgent(req, res, next) {
-    if (!req.session.user || req.session.user.role !== 'agent') return res.status(403).render('error', { title: 'Agent access required', message: 'This view is reserved for delivery agents.' });
+    if (!req.session.user || req.session.user.role !== 'agent') {
+        if (req.query.format === 'json' || req.get('Accept')?.includes('application/json')) return res.status(403).json({ error: 'Agent role required.', currentRole: req.session.user?.role || null });
+        return res.status(403).render('error', { title: 'Agent access required', message: 'This view is reserved for delivery agents.' });
+    }
     next();
 }
 
